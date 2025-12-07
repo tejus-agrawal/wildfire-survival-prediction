@@ -1,0 +1,11 @@
+pandas
+numpy
+requests
+python-dotenv
+jupyter
+scikit-learn
+matplotlib
+opencv-python
+segment-anything
+torch torchvision --index-url https://download.pytorch.org/whl/cpu 
+# Note: Local torch is for CPU/MPS testing. Colab will use CUDA.
