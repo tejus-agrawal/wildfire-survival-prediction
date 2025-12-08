@@ -2,4 +2,19 @@ venv/
 __pycache__/
 .env
 .DS_Store
+
+# Large data files - should not be in Git
 data/images/
+data/mask_tensors/
+data/images.zip
+data/*.zip
+
+# Model files - too large for regular Git
+models/*.pth
+models/*.pkl
+models/*.h5
+models/*.ckpt
+
+# Large binary files
+*.npy
+*.npz
