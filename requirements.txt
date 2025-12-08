@@ -4,3 +4,11 @@ requests
 mercantile
 pillow
 matplotlib
+seaborn
+scikit-learn
+xgboost
+torch
+torchvision
+tqdm
+opencv-python
+segment-anything
