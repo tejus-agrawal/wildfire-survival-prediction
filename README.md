@@ -1,9 +1,27 @@
 # Wildfire Survival Prediction - Palisades SAM Model
 
 ## Project Overview
-This project uses satellite imagery and machine learning to predict wildfire survival for homes. It leverages the Segment Anything Model (SAM) for feature extraction and compares performance between XGBoost and Deep Learning approaches.
+This project leverages satellite imagery and machine learning to predict wildfire survival for homes. It uses the **Segment Anything Model (SAM)** for semantic segmentation of satellite imagery to extract features like structure area, vegetation density, and defensible space. These features are then used to train and compare **XGBoost** and **Deep Learning (MLP/CNN)** models.
 
-## Setup Instructions
+A comprehensive interactive dashboard allows for risk analysis and comparison of model predictions against ground truth data.
+
+## 📂 Data Access
+**Large files (Images, Mask Tensors, and Raw Datasets) are hosted externally.**
+
+> **https://drive.google.com/drive/folders/1-3cwA9ihXukHSiez9MXFWmQ5-lxJ1lBL?usp=sharing**
+
+Please download the contents and place them in the `data/` directory following this structure:
+```
+data/
+├── raw/
+│   └── dins_raw.csv          # Original California DINS dataset
+├── images/                   # Satellite imagery (~20k images)
+├── mask_tensors/             # Pre-computed SAM mask tensors
+└── processed/
+    └── clean_homes.csv       # Cleaned metadata
+```
+
+## 🛠️ Setup Instructions
 
 ### 1. Prerequisites
 - Python 3.9+
@@ -33,23 +51,36 @@ This project uses satellite imagery and machine learning to predict wildfire sur
     pip install git+https://github.com/facebookresearch/segment-anything.git
     ```
 
-### 3. Running the Notebooks
+## 🚀 Running the Pipeline
+
+### A. Jupyter Notebooks (Data Processing & Training)
 Start the Jupyter Notebook server:
 ```bash
 jupyter notebook
 ```
-
 Execute the notebooks in the following order:
-1.  **`notebooks/data_cleaning.ipynb`**: Cleans raw DINS data and downloads satellite imagery.
-2.  **`notebooks/sam_extraction.ipynb`**: Uses SAM to extract masks and features (tree/structure area) from images.
-3.  **`notebooks/mlp_training.ipynb`**: Trains and compares XGBoost vs. MLP models on physics-based features.
-4.  **`notebooks/cnn_training.ipynb`**: (Optional) Trains a ResNet-18 model directly on images.
-5.  **`notebooks/app_preparation.ipynb`**: Prepares artifacts for the deployment app.
+1.  **`notebooks/data_cleaning.ipynb`**: Cleans raw DINS data and filters for residential structures. (Used to create the clean_homes.csv)
+2.  **`notebooks/esri_home_footprints.ipynb`**: Downloads historical pre-fire satellite imagery using the Esri Wayback API. (Used to generate the images in data)
+3.  **`notebooks/sam_extraction.ipynb`**: Uses SAM to extract masks (Structure, Tree, Grass) and computes physics-based features. (Used to generate the final_dataset.csv and mask_tensors files)
+4.  **`notebooks/mlp_training.ipynb`**: Trains and compares XGBoost vs. MLP (Focal Loss) models on tabular features.
+5.  **`notebooks/cnn_training.ipynb`**: (Optional) Trains a ResNet-18 model directly on semantic image stacks.
+6.  **`notebooks/app_preparation.ipynb`**: Prepares the final dataset for the dashboard.
 
-## Project Structure
-- `data/`: Contains raw CSVs, processed datasets, and images.
-- `models/`: Stores trained model weights (e.g., `best_model.pth`, `best_model.json`).
-- `notebooks/`: Jupyter notebooks for the pipeline.
-- `src/`: Shared utility scripts (if any).
-- `app/`: Application code (dashboard.py).
+### B. Interactive Dashboard
+Run the Streamlit app to visualize results:
+```bash
+cd app
+streamlit run dashboard.py
+```
 
+## 🏗️ Project Structure
+- `data/`: Datasets and imagery.
+- `models/`: Trained model weights (`best_resnet.pth`, `best_model.json`).
+- `notebooks/`: Workflow notebooks.
+- `app/`: Streamlit dashboard code (`dashboard.py`).
+- `src/`: Core Python modules:
+    - `acquisition.py`: Esri Wayback imagery downloading logic.
+    - `data.py`: PyTorch Dataset classes.
+    - `features.py`: Feature engineering and SAM mask processing.
+    - `models.py`: PyTorch model definitions (ResNet, MLP, FocalLoss).
+    - `utils.py`: Hardware acceleration and helper functions.
