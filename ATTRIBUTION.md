@@ -4,3 +4,4 @@
 
 - SAM model from meta
 
+- gemini 3 pro used through Cursor to edit files
