@@ -12,3 +12,5 @@ torchvision
 tqdm
 opencv-python
 segment-anything
+streamlit
+pydeck
