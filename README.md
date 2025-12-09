@@ -1,86 +1,47 @@
 # Wildfire Survival Prediction - Palisades SAM Model
 
-## Project Overview
-This project leverages satellite imagery and machine learning to predict wildfire survival for homes. It uses the **Segment Anything Model (SAM)** for semantic segmentation of satellite imagery to extract features like structure area, vegetation density, and defensible space. These features are then used to train and compare **XGBoost** and **Deep Learning (MLP/CNN)** models.
+## What it Does
 
-A comprehensive interactive dashboard allows for risk analysis and comparison of model predictions against ground truth data.
+This project leverages satellite imagery and machine learning to predict wildfire survival for homes. It uses the **Segment Anything Model (SAM)** for semantic segmentation of satellite imagery to extract features like structure area, vegetation density, and defensible space. These features are then used to train and compare **XGBoost** and **Deep Learning (MLP/CNN)** models. A comprehensive interactive dashboard allows for risk analysis and comparison of model predictions against ground truth data.
 
-## 📂 Data Access
-**Large files (Images, Mask Tensors, and Raw Datasets) are hosted externally.**
+## Quick Start
 
-> **https://drive.google.com/drive/folders/1-3cwA9ihXukHSiez9MXFWmQ5-lxJ1lBL?usp=sharing**
+1. **Install dependencies** (see [SETUP.md](SETUP.md) for detailed instructions):
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-Please download the contents and place them in the `data/` directory following this structure:
-```
-data/
-├── raw/
-│   └── dins_raw.csv          # Original California DINS dataset
-├── images/                   # Satellite imagery (~20k images)
-├── mask_tensors/             # Pre-computed SAM mask tensors
-└── processed/
-    └── clean_homes.csv       # Cleaned metadata
-```
+2. **Download data** from the [Google Drive folder](https://drive.google.com/drive/folders/1-3cwA9ihXukHSiez9MXFWmQ5-lxJ1lBL?usp=sharing) and place it in the `data/` directory.
 
-## 🛠️ Setup Instructions
+3. **Run the dashboard**:
+   ```bash
+   cd app
+   streamlit run dashboard.py
+   ```
 
-### 1. Prerequisites
-- Python 3.9+
-- Git
+For complete setup instructions, data processing workflows, and training procedures, see [SETUP.md](SETUP.md).
 
-### 2. Installation
+## Video Links
 
-1.  **Clone the repository**:
-    ```bash
-    git clone <repository_url>
-    cd wildfire-survival-prediction
-    ```
+<!-- Add your demo video link here -->
+<!-- Add your technical walkthrough video link here -->
 
-2.  **Create and activate a virtual environment**:
-    ```bash
-    python3 -m venv venv
-    source venv/bin/activate  # On Windows: venv\Scripts\activate
-    ```
+## Evaluation
 
-3.  **Install dependencies**:
-    ```bash
-    pip install --upgrade pip
-    pip install -r requirements.txt
-    ```
-    *Note: If you encounter issues with `segment-anything`, install it directly from git:*
-    ```bash
-    pip install git+https://github.com/facebookresearch/segment-anything.git
-    ```
+### Model Performance
 
-## 🚀 Running the Pipeline
+The models were evaluated on a held-out test set with the following results:
 
-### A. Jupyter Notebooks (Data Processing & Training)
-Start the Jupyter Notebook server:
-```bash
-jupyter notebook
-```
-Execute the notebooks in the following order:
-1.  **`notebooks/data_cleaning.ipynb`**: Cleans raw DINS data and filters for residential structures. (Used to create the clean_homes.csv)
-2.  **`notebooks/esri_home_footprints.ipynb`**: Downloads historical pre-fire satellite imagery using the Esri Wayback API. (Used to generate the images in data)
-3.  **`notebooks/sam_extraction.ipynb`**: Uses SAM to extract masks (Structure, Tree, Grass) and computes physics-based features. (Used to generate the final_dataset.csv and mask_tensors files)
-4.  **`notebooks/mlp_training.ipynb`**: Trains and compares XGBoost vs. MLP (Focal Loss) models on tabular features.
-5.  **`notebooks/cnn_training.ipynb`**: (Optional) Trains a ResNet-18 model directly on semantic image stacks.
-6.  **`notebooks/app_preparation.ipynb`**: Prepares the final dataset for the dashboard.
+**XGBoost (Baseline)**
+- Accuracy: **63.28%**
+- ROC-AUC: **0.6852**
 
-### B. Interactive Dashboard
-Run the Streamlit app to visualize results:
-```bash
-cd app
-streamlit run dashboard.py
-```
+**MLP with Focal Loss**
+- Accuracy: **59.40%**
+- ROC-AUC: **0.6288**
 
-## 🏗️ Project Structure
-- `data/`: Datasets and imagery.
-- `models/`: Trained model weights (`best_resnet.pth`, `best_model.json`).
-- `notebooks/`: Workflow notebooks.
-- `app/`: Streamlit dashboard code (`dashboard.py`).
-- `src/`: Core Python modules:
-    - `acquisition.py`: Esri Wayback imagery downloading logic.
-    - `data.py`: PyTorch Dataset classes.
-    - `features.py`: Feature engineering and SAM mask processing.
-    - `models.py`: PyTorch model definitions (ResNet, MLP, FocalLoss).
-    - `utils.py`: Hardware acceleration and helper functions.
+**Best Model**: XGBoost achieved superior performance on the test set, with an AUC score of 0.6852 compared to the MLP's 0.6288. The XGBoost model was selected as the final model for deployment.
+
+### Model Comparison
+
+The XGBoost model outperformed the deep learning MLP approach, demonstrating that gradient boosting on engineered tabular features (structure area, vegetation density, defensible space, and their interactions) was more effective for this wildfire survival prediction task than the neural network architecture tested.

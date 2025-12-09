@@ -129,14 +129,30 @@ def create_stack(house_mask, tree_mask, output_size=(224, 224)):
 # --- MLP Feature Engineering ---
 
 def load_and_engineer_features(filepath):
+    """
+    Loads data and engineers features for MLP.
+    Returns:
+        X (np.array): Feature matrix
+        y (np.array): Target vector
+        feature_names (list): List of feature names
+    """
     df = pd.read_csv(filepath)
     
+    # Handle missing values
+    df.replace([np.inf, -np.inf], np.nan, inplace=True)
+    df = df.dropna()
+    
     required_cols = ['structure_area_m2', 'tree_area_m2', 'grass_area_m2', 'defensible_space_m']
+    
+    # Check if required physics columns exist
     if not all(col in df.columns for col in required_cols):
         print("⚠️ Warning: Physics columns missing. Skipping physics engineering.")
-        # Fallback
-        feature_cols = [c for c in df.columns if c not in ['id', 'address', 'damage_str', 'structure_type', 'target', 'lat', 'lon', 'filename']]
-        return df, feature_cols.values, feature_cols
+        # Fallback: Use all numeric columns except metadata
+        exclude_cols = ['id', 'address', 'damage_str', 'structure_type', 'target', 'lat', 'lon', 'filename', 'risk_factor']
+        feature_cols = [c for c in df.columns if c not in exclude_cols]
+        X = df[feature_cols].values
+        y = df['target'].values
+        return X, y, feature_cols
 
     # 1. Total Lot Area Proxy
     df['estimated_lot_area'] = df['structure_area_m2'] + df['tree_area_m2'] + df['grass_area_m2'] + 1.0
@@ -159,14 +175,13 @@ def load_and_engineer_features(filepath):
     ]
     
     # --- B. Interaction Terms ---
-    poly = PolynomialFeatures(degree=2, interaction_only=True, include_bias=False)
-    interactions = poly.fit_transform(df[base_features])
+    # NO POLYNOMIAL INTERACTION: The checkpoint expects 8 features (4 physics + 4 derived above).
+    # Wait, 4 physics + 3 derived (structure_density, fuel_density, danger_index) = 7.
+    # Maybe estimated_lot_area was the 8th?
+    # Let's try including estimated_lot_area.
+    base_features.append('estimated_lot_area')
     
-    target_feature_names = [f"poly_{i}" for i in range(interactions.shape[1])]
-    # df_poly = pd.DataFrame(interactions, columns=target_feature_names) # Optional if we returned df
-    
-    X = interactions
+    X = df[base_features].values
     y = df['target'].values
     
-    return X, y, target_feature_names
-
+    return X, y, base_features
