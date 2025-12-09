@@ -69,7 +69,7 @@ streamlit run dashboard.py
 
 ## Project Structure
 - `data/`: Datasets and imagery.
-- `models/`: Trained model weights (`best_resnet.pth`, `best_model.json`).
+- `models/`: Trained model weights (`best_resnet.pth`, `best_model.pth`).
 - `notebooks/`: Workflow notebooks.
 - `app/`: Streamlit dashboard code (`dashboard.py`).
 - `src/`: Core Python modules:

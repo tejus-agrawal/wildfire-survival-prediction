@@ -174,11 +174,7 @@ def load_and_engineer_features(filepath):
         'defensible_space_m', 'structure_density', 'fuel_density', 'danger_index'
     ]
     
-    # --- B. Interaction Terms ---
-    # NO POLYNOMIAL INTERACTION: The checkpoint expects 8 features (4 physics + 4 derived above).
-    # Wait, 4 physics + 3 derived (structure_density, fuel_density, danger_index) = 7.
-    # Maybe estimated_lot_area was the 8th?
-    # Let's try including estimated_lot_area.
+    # Add estimated lot area to complete the feature set (8 total features)
     base_features.append('estimated_lot_area')
     
     X = df[base_features].values

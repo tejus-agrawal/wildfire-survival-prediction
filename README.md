@@ -23,8 +23,10 @@ For complete setup instructions, data processing workflows, and training procedu
 
 ## Video Links
 
-<!-- Add your demo video link here -->
-<!-- Add your technical walkthrough video link here -->
+### Demo Video
+https://duke.zoom.us/rec/share/gqf3NkG4Ey-IxA5Km7qLY19CaxYX7pfRaVPULfDWHIvWo6nNZ1heAioMWBPoTFoM.Ic_d0JSFNKS2GXKq?startTime=1765263038000
+### Technical Walkthrough
+https://duke.zoom.us/rec/share/t0x2IaZBSMuaBdA9AZqlNleqEJs8__mCDDDt3yNeA4dnnQDvTP5VYWTR0OM2ULr6.lNrJYpxA_yrb9Tgg?startTime=1765303589000
 
 ## Evaluation
 
